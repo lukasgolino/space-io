@@ -131,6 +131,7 @@ func _physics_process(dt: float) -> void:
 		player.move_to = mouse
 		player.face_to = mouse
 		player.want_fire = Input.is_action_pressed("fire")
+		player.coast = Input.is_action_pressed("swivel")
 		if Input.is_action_just_pressed("boost"):
 			player.want_boost = true
 		for k in Fleet.FORMATION_NAMES.size():

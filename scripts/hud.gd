@@ -41,7 +41,7 @@ func _draw() -> void:
 	for k in Fleet.FORMATION_NAMES.size():
 		var nm: String = Fleet.FORMATION_NAMES[k]
 		forms.append(("[%d %s]" if k == p.formation else "%d %s") % [k + 1, nm.to_lower()])
-	_centred("   ".join(forms), vp.y - 72.0, 15, DIM)
+	_centred("   ".join(forms) + "      hold right-click: swivel (aim without steering)", vp.y - 72.0, 15, DIM)
 
 	# Tuning file status (F5), fades after a few seconds
 	var age := Time.get_ticks_msec() / 1000.0 - Tune.status_time

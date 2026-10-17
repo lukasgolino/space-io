@@ -24,6 +24,7 @@ var move_to := Vector2.ZERO
 var face_to := Vector2.ZERO
 var want_fire := false
 var want_boost := false
+var coast := false   # swivel: face face_to but don't steer; momentum carries the fleet
 
 var fire_cd := 0.0
 var boost_cd := 0.0
@@ -39,8 +40,10 @@ func boosting() -> bool:
 	return boost_left > 0.0
 
 
+## Top speed: bigger fleets are slower (size_slowdown), boost multiplies.
 func speed_cap() -> float:
-	return Tune.max_speed * (Tune.boost_mult if boosting() else 1.0)
+	var t := clampf((ships.size() - 1.0) / maxf(1.0, Tune.max_ships - 1.0), 0.0, 1.0)
+	return Tune.max_speed * (1.0 - Tune.size_slowdown * t) * (Tune.boost_mult if boosting() else 1.0)
 
 
 func fire_ready() -> float:
@@ -98,6 +101,8 @@ func step(dt: float) -> void:
 	if boosting():
 		target_speed = speed_cap()
 	var desired := to.normalized() * target_speed if dist > 1.0 else Vector2.ZERO
+	if coast:
+		desired = anchor_vel.limit_length(speed_cap())
 	var a := Tune.accel * (2.0 if boosting() else 1.0)
 	anchor_vel = anchor_vel.move_toward(desired, a * dt)
 	anchor += anchor_vel * dt
@@ -111,7 +116,7 @@ func step(dt: float) -> void:
 
 	var face := face_to - anchor
 	if face.length() > 6.0:
-		heading = rotate_toward(heading, face.angle(), Tune.fleet_turn_rate * dt)
+		heading = face.angle() if Tune.fleet_turn_rate <= 0.0 else rotate_toward(heading, face.angle(), Tune.fleet_turn_rate * dt)
 
 	if want_fire and fire_cd <= 0.0 and not ships.is_empty():
 		fire_cd = Tune.fire_cooldown

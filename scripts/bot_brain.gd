@@ -58,12 +58,19 @@ func _think() -> void:
 			dodge_left = 0.5
 			dodge_dir = incoming.orthogonal().normalized() * (1.0 if randf() < 0.5 else -1.0)
 
+	fleet.coast = false
 	if threat != null:
 		var away := (me - threat.centre()).normalized()
+		var td := me.distance_to(threat.centre())
 		fleet.move_to = me + away * 500.0
 		fleet.face_to = fleet.move_to
-		if me.distance_to(threat.centre()) < 420.0:
+		if td < 420.0:
 			fleet.want_boost = true
+		elif td < Tune.bot_fire_range and fleet.fire_cd <= 0.0 and randf() < 0.3:
+			# Swivel and fire back while momentum carries us away.
+			fleet.coast = true
+			fleet.face_to = threat.centre()
+			fleet.want_fire = true
 	elif target != null:
 		var d := me.distance_to(target.centre())
 		var lead := target.centre() + target.anchor_vel * (d / Tune.laser_speed)

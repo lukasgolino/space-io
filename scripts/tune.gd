@@ -5,24 +5,28 @@ extends Node
 signal changed
 
 const FILE_NAME := "tuning.cfg"
+## Bump when defaults change: an older tuning.cfg is moved to tuning.cfg.old and rewritten,
+## so stale values never silently override new defaults.
+const DEFAULTS_VERSION := 2
 
 # Arena (square, centred on the origin)
 var arena_half := 2600.0
 
 # Fleet movement: an invisible leader chases the cursor; ships follow it
-var max_speed := 260.0
+var max_speed := 320.0
+var size_slowdown := 0.35
 var accel := 2200.0
 var slow_radius := 140.0
 var boost_mult := 2.2
 var boost_time := 0.45
 var boost_cooldown := 3.5
-var fleet_turn_rate := 8.0
+var fleet_turn_rate := 0.0
 
 # Ships
 var ship_scale := 0.5
 var ship_accel := 1800.0
 var ship_speed_mult := 1.6
-var turn_rate := 12.0
+var turn_rate := 0.0
 var hit_radius := 11.0
 var max_ships := 30
 
@@ -38,8 +42,8 @@ var jitter := 0.08
 # Lasers
 var fire_cooldown := 0.8
 var fire_stagger := 0.06
-var laser_speed := 430.0
-var laser_life := 2.0
+var laser_speed := 300.0
+var laser_life := 2.6
 var nose_offset := 14.0
 var laser_length := 64.0
 
@@ -70,17 +74,18 @@ var respawn_delay := 1.2
 ## [section, name, explanation] - the order and comments of tuning.cfg.
 const DOCS := [
 	["arena", "arena_half", "half the arena width, px"],
-	["movement", "max_speed", "fleet top speed, px/s"],
+	["movement", "max_speed", "top speed of a 1-ship fleet, px/s (keep a bit above laser_speed so small fleets can outrun bullets)"],
+	["movement", "size_slowdown", "fraction of top speed lost at the fleet cap (0.35 = a full fleet moves at 65%), linear in fleet size"],
 	["movement", "accel", "how fast the fleet leader reaches top speed, px/s^2 (higher = snappier)"],
 	["movement", "slow_radius", "leader eases to a stop when the cursor is this close, px"],
 	["movement", "boost_mult", "speed multiplier while boosting"],
 	["movement", "boost_time", "boost duration, s"],
 	["movement", "boost_cooldown", "boost recharge, s (counted from boost start)"],
-	["movement", "fleet_turn_rate", "how fast the fleet heading turns to the cursor, rad/s"],
+	["movement", "fleet_turn_rate", "how fast the fleet heading turns to the cursor, rad/s (0 = instant)"],
 	["ships", "ship_scale", "sprite scale (art is drawn at 2x, so 0.5 = native)"],
 	["ships", "ship_accel", "how fast each ship changes velocity, px/s^2 (lower = more drifty)"],
 	["ships", "ship_speed_mult", "ships may go this much faster than the leader to catch up"],
-	["ships", "turn_rate", "how fast each ship turns to the fleet heading, rad/s"],
+	["ships", "turn_rate", "how fast each ship turns to the fleet heading, rad/s (0 = instant)"],
 	["ships", "hit_radius", "laser hit radius around a ship centre, px"],
 	["ships", "max_ships", "fleet size cap"],
 	["formation", "blob_pull", "BLOB: pull of each ship towards the fleet leader, 1/s (higher = tighter, snappier)"],
@@ -142,6 +147,11 @@ func load_file() -> void:
 		_say("tuning.cfg has an error (%s): kept previous values" % error_string(err))
 		push_warning(status)
 		return
+	if cfg.get_value("meta", "defaults_version", 1) != DEFAULTS_VERSION:
+		DirAccess.rename_absolute(path, path + ".old")
+		_write_defaults(path)
+		_say("defaults changed: old settings moved to %s.old, wrote new %s" % [path, path])
+		return
 	var n := 0
 	for entry: Array in DOCS:
 		var key: String = entry[1]
@@ -167,6 +177,10 @@ func _write_defaults(path: String) -> void:
 	var lines: PackedStringArray = [
 		"; Space IO tuning. Edit, save, press F5 in game to apply (arena/bot sizes apply on new spawns).",
 		"; Delete this file to get the defaults back.",
+		"",
+		"[meta]",
+		"; written by the game; don't edit",
+		"defaults_version=%d" % DEFAULTS_VERSION,
 	]
 	var section := ""
 	for entry: Array in DOCS:

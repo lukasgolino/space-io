@@ -42,7 +42,7 @@ func step(dt: float, target: Vector2, centroid: Vector2, blob: bool, mates: Arra
 	want = want.limit_length(fleet.speed_cap() * Tune.ship_speed_mult * speed_k)
 	vel = vel.move_toward(want, Tune.ship_accel * (2.0 if fleet.boosting() else 1.0) * dt)
 	global_position = pos + vel * dt
-	rotation = rotate_toward(rotation, fleet.heading, Tune.turn_rate * dt)
+	rotation = fleet.heading if Tune.turn_rate <= 0.0 else rotate_toward(rotation, fleet.heading, Tune.turn_rate * dt)
 
 	if fire_timer >= 0.0:
 		fire_timer -= dt
