@@ -14,6 +14,8 @@ const BOT_NAMES: Array[String] = [
 
 ## Headless tests set this: the player fleet is driven by a bot brain instead of the mouse.
 var autopilot := false
+## Demo/capture: every fleet uses this formation (-1 = blob default).
+var force_formation := -1
 
 var fleets: Array[Fleet] = []
 var player: Fleet
@@ -45,6 +47,16 @@ func _ready() -> void:
 	spawn_player()
 	for i in Tune.bot_count:
 		spawn_bot()
+	Tune.changed.connect(_on_tune_changed)
+
+
+func _on_tune_changed() -> void:
+	for f in fleets:
+		for s in f.ships:
+			s.refresh_look()
+	for e in _explosions:
+		e.scale = Vector2.ONE * Tune.ship_scale * 1.2
+	lasers.refresh_look()
 
 
 func _exit_tree() -> void:
@@ -86,7 +98,10 @@ func _make_fleet(team: int, fleet_name: String, is_player: bool, at: Vector2, si
 	f.face_to = at + Vector2.RIGHT
 	f.heading = randf() * TAU
 	for i in size:
-		f.add_ship(at + Fleet.wedge_slot(i, size).rotated(f.heading))
+		f.add_ship(at + Vector2.from_angle(randf() * TAU) * sqrt(randf() * size) * Tune.separation * 0.8)
+	f.centroid = at
+	if force_formation >= 0:
+		f.formation = force_formation as Fleet.Formation
 	fleets.append(f)
 	return f
 
@@ -101,7 +116,7 @@ func _free_spot(clearance: float) -> Vector2:
 		var d := INF
 		for f in fleets:
 			if f.alive:
-				d = minf(d, p.distance_to(f.anchor))
+				d = minf(d, p.distance_to(f.centre()))
 		if d >= clearance:
 			return p
 		if d > best_d:
@@ -118,6 +133,9 @@ func _physics_process(dt: float) -> void:
 		player.want_fire = Input.is_action_pressed("fire")
 		if Input.is_action_just_pressed("boost"):
 			player.want_boost = true
+		for k in Fleet.FORMATION_NAMES.size():
+			if Input.is_action_just_pressed("formation_%d" % (k + 1)):
+				player.formation = k as Fleet.Formation
 
 	for f in fleets:
 		if f.alive:
@@ -229,7 +247,7 @@ func _update_camera(dt: float) -> void:
 	var t := clampf((n - 1.0) / (Tune.max_ships - 1.0), 0.0, 1.0)
 	var z := lerpf(Tune.zoom_one_ship, Tune.zoom_full_fleet, t)
 	camera.zoom = camera.zoom.lerp(Vector2(z, z), 1.0 - exp(-3.0 * dt))
-	camera.global_position = camera.global_position.lerp(player.anchor, 1.0 - exp(-10.0 * dt))
+	camera.global_position = camera.global_position.lerp(player.centre(), 1.0 - exp(-10.0 * dt))
 	_shake = maxf(0.0, _shake - 30.0 * dt)
 	camera.offset = Vector2(randf_range(-1, 1), randf_range(-1, 1)) * _shake
 

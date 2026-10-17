@@ -6,3 +6,5 @@
 __pycache__/
 # Exports
 build/
+# Owner's local tuning overrides (written on first run)
+tuning.cfg

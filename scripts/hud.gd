@@ -37,6 +37,16 @@ func _draw() -> void:
 	var y := vp.y - 46.0
 	_bar(Vector2(vp.x / 2 - w - 12, y), w, p.fire_ready(), "FIRE  [click]", Art.color(p.team))
 	_bar(Vector2(vp.x / 2 + 12, y), w, p.boost_ready(), "BOOST  [space]", Color("#ffee22"))
+	var forms := PackedStringArray()
+	for k in Fleet.FORMATION_NAMES.size():
+		var nm: String = Fleet.FORMATION_NAMES[k]
+		forms.append(("[%d %s]" if k == p.formation else "%d %s") % [k + 1, nm.to_lower()])
+	_centred("   ".join(forms), vp.y - 72.0, 15, DIM)
+
+	# Tuning file status (F5), fades after a few seconds
+	var age := Time.get_ticks_msec() / 1000.0 - Tune.status_time
+	if Tune.status != "" and age < 5.0:
+		_centred(Tune.status, 120.0, 16, Color(TEXT, clampf(5.0 - age, 0.0, 1.0)))
 
 	# Leaderboard, top-right
 	var board := world.leaderboard()

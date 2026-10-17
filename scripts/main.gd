@@ -13,12 +13,16 @@ func _ready() -> void:
 	env.glow_blend_mode = Environment.GLOW_BLEND_MODE_ADDITIVE
 	for level in 7:
 		env.set_glow_level(level, level in [1, 2])
+	Tune.changed.connect(func() -> void: env.glow_intensity = Tune.glow_intensity)
 	var we := WorldEnvironment.new()
 	we.environment = env
 	add_child(we)
 
 	var world := World.new()
 	world.autopilot = OS.get_cmdline_user_args().has("--autopilot")   # demo / capture mode
+	for arg in OS.get_cmdline_user_args():
+		if arg.begins_with("--formation="):
+			world.force_formation = int(arg.get_slice("=", 1)) - 1
 	add_child(world)
 
 	var layer := CanvasLayer.new()

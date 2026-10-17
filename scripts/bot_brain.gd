@@ -32,7 +32,7 @@ func step(dt: float) -> void:
 
 
 func _think() -> void:
-	var me := fleet.anchor
+	var me := fleet.centre()
 	var n := fleet.ships.size()
 
 	var target: Fleet = null
@@ -41,12 +41,12 @@ func _think() -> void:
 	for other in fleet.world.fleets:
 		if other == fleet or not other.alive:
 			continue
-		var d := me.distance_to(other.anchor)
+		var d := me.distance_to(other.centre())
 		if d > Tune.bot_sense:
 			continue
 		var m := other.ships.size()
 		if m > n * 1.5 + 2 and d < 700.0:
-			if threat == null or d < me.distance_to(threat.anchor):
+			if threat == null or d < me.distance_to(threat.centre()):
 				threat = other
 		elif d - (200.0 if other.is_player else 0.0) < best:
 			best = d
@@ -59,18 +59,18 @@ func _think() -> void:
 			dodge_dir = incoming.orthogonal().normalized() * (1.0 if randf() < 0.5 else -1.0)
 
 	if threat != null:
-		var away := (me - threat.anchor).normalized()
+		var away := (me - threat.centre()).normalized()
 		fleet.move_to = me + away * 500.0
 		fleet.face_to = fleet.move_to
-		if me.distance_to(threat.anchor) < 420.0:
+		if me.distance_to(threat.centre()) < 420.0:
 			fleet.want_boost = true
 	elif target != null:
-		var d := me.distance_to(target.anchor)
-		var lead := target.anchor + target.anchor_vel * (d / Tune.laser_speed)
+		var d := me.distance_to(target.centre())
+		var lead := target.centre() + target.anchor_vel * (d / Tune.laser_speed)
 		fleet.face_to = lead
-		var to := (target.anchor - me).normalized()
+		var to := (target.centre() - me).normalized()
 		if d > 520.0:
-			fleet.move_to = target.anchor
+			fleet.move_to = target.centre()
 		else:
 			# Hold range and circle so they have to dodge too.
 			if randf() < 0.05:
@@ -96,7 +96,7 @@ func _think() -> void:
 ## Velocity of the nearest enemy bolt heading at us, or ZERO.
 func _incoming_bolt() -> Vector2:
 	var lz := fleet.world.lasers
-	var me := fleet.anchor
+	var me := fleet.centre()
 	var best := 260.0 * 260.0
 	var found := Vector2.ZERO
 	for i in lz.pos.size():

@@ -20,7 +20,6 @@ func _ready() -> void:
 	for t in Art.TEAMS.size():
 		var tex := Art.sheet("laser", t)
 		var quad := QuadMesh.new()
-		quad.size = tex.get_size() * (Tune.laser_length / tex.get_size().x)
 		var mm := MultiMesh.new()
 		mm.transform_format = MultiMesh.TRANSFORM_2D
 		mm.mesh = quad
@@ -30,11 +29,19 @@ func _ready() -> void:
 		mmi.multimesh = mm
 		mmi.texture = tex
 		mmi.material = mat
-		mmi.modulate = Color(Tune.laser_hdr, Tune.laser_hdr, Tune.laser_hdr)   # HDR: blooms
 		mmi.physics_interpolation_mode = Node.PHYSICS_INTERPOLATION_MODE_OFF
 		add_child(mmi)
 		_mm.append(mm)
 	_counts.resize(Art.TEAMS.size())
+	refresh_look()
+
+
+func refresh_look() -> void:
+	for mmi in get_children():
+		var m := mmi as MultiMeshInstance2D
+		var tex := m.texture
+		(m.multimesh.mesh as QuadMesh).size = tex.get_size() * (Tune.laser_length / tex.get_size().x)
+		m.modulate = Color(Tune.laser_hdr, Tune.laser_hdr, Tune.laser_hdr)   # HDR above 1 blooms
 
 
 func spawn(at: Vector2, v: Vector2, f: Fleet) -> void:

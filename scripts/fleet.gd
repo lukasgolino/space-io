@@ -1,7 +1,11 @@
 class_name Fleet
 extends RefCounted
-## A fleet: an anchor point that steers like one craft, plus the ships swarming around it.
-## Controllers (player input or bot brain) only set move_to / face_to / want_fire / want_boost.
+## A fleet: an invisible leader (anchor) that steers like one craft, plus ships that follow it,
+## either as a free blob or pulled (softly) into a formation.
+## Controllers (player input or bot brain) only set move_to / face_to / want_fire / want_boost / formation.
+
+enum Formation { BLOB, TRIANGLE, SQUARE, LINE }
+const FORMATION_NAMES: Array[String] = ["BLOB", "TRIANGLE", "SQUARE", "LINE"]
 
 var world: World
 var id := 0
@@ -25,6 +29,9 @@ var fire_cd := 0.0
 var boost_cd := 0.0
 var boost_left := 0.0
 
+var formation := Formation.BLOB
+var centroid := Vector2.ZERO
+
 var brain: BotBrain
 
 
@@ -44,17 +51,34 @@ func boost_ready() -> float:
 	return 1.0 - clampf(boost_cd / Tune.boost_cooldown, 0.0, 1.0)
 
 
-## Slot i of a packed wedge (apex = slot 0 at the anchor, rows trailing behind), in world space.
-## Row r holds r + 1 ships; a partial last row is centred.
-func slot_offset(i: int) -> Vector2:
-	return wedge_slot(i, ships.size()).rotated(heading)
-
-
-static func wedge_slot(i: int, total: int) -> Vector2:
-	var row := int((sqrt(8.0 * i + 1.0) - 1.0) / 2.0)
-	var first := row * (row + 1) / 2
-	var in_row := mini(row + 1, total - first)
-	return Vector2(-row * Tune.slot_back, (i - first - (in_row - 1) * 0.5) * Tune.slot_side)
+## Formation slots for n ships, local space (x = forward), centred on the origin.
+func _slots(n: int) -> PackedVector2Array:
+	var out := PackedVector2Array()
+	var sp := Tune.slot_spacing
+	match formation:
+		Formation.TRIANGLE:   # apex forward, row r holds r + 1 ships
+			for i in n:
+				var row := int((sqrt(8.0 * i + 1.0) - 1.0) / 2.0)
+				var first := row * (row + 1) / 2
+				var in_row := mini(row + 1, n - first)
+				out.append(Vector2(-row * sp, (i - first - (in_row - 1) * 0.5) * sp))
+		Formation.SQUARE:
+			var cols := ceili(sqrt(float(n)))
+			for i in n:
+				var row := i / cols
+				var in_row := mini(cols, n - row * cols)
+				out.append(Vector2(-row * sp, (i % cols - (in_row - 1) * 0.5) * sp))
+		Formation.LINE:       # side by side, all guns forward
+			for i in n:
+				out.append(Vector2(0.0, (i - (n - 1) * 0.5) * sp))
+	var mean := Vector2.ZERO
+	for p in out:
+		mean += p
+	if n > 0:
+		mean /= n
+	for k in out.size():
+		out[k] -= mean
+	return out
 
 
 func step(dt: float) -> void:
@@ -94,8 +118,16 @@ func step(dt: float) -> void:
 		for s in ships:
 			s.fire_timer = randf() * Tune.fire_stagger
 
+	centroid = Vector2.ZERO
+	for s in ships:
+		centroid += s.global_position
+	if not ships.is_empty():
+		centroid /= ships.size()
+	var blob := formation == Formation.BLOB
+	var slots := PackedVector2Array() if blob else _slots(ships.size())
 	for i in ships.size():
-		ships[i].step(dt, anchor + slot_offset(i), ships)
+		var target := anchor if blob else anchor + slots[i].rotated(heading)
+		ships[i].step(dt, target, centroid, blob, ships)
 
 
 func add_ship(at: Vector2) -> Ship:
@@ -122,5 +154,6 @@ func remove_ship(s: Ship) -> void:
 		alive = false
 
 
+## Where the fleet actually is (its ships' centre); the anchor can run ahead of it.
 func centre() -> Vector2:
-	return anchor
+	return centroid if not ships.is_empty() else anchor
