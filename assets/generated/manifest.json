@@ -1,0 +1,494 @@
+{
+  "assets": {
+    "explosion": {
+      "animations": {
+        "burst": {
+          "fps": 20.0,
+          "frames": [
+            "burst_0",
+            "burst_1",
+            "burst_2",
+            "burst_3",
+            "burst_4",
+            "burst_5",
+            "burst_6"
+          ],
+          "loop": false
+        }
+      },
+      "description": "Ship explosion: white flash, expanding neon shock ring and sparks, fading out. Drawn at 2x.",
+      "frames": {
+        "burst_0": [
+          0,
+          0,
+          64,
+          64
+        ],
+        "burst_1": [
+          64,
+          0,
+          64,
+          64
+        ],
+        "burst_2": [
+          128,
+          0,
+          64,
+          64
+        ],
+        "burst_3": [
+          192,
+          0,
+          64,
+          64
+        ],
+        "burst_4": [
+          256,
+          0,
+          64,
+          64
+        ],
+        "burst_5": [
+          320,
+          0,
+          64,
+          64
+        ],
+        "burst_6": [
+          384,
+          0,
+          64,
+          64
+        ]
+      },
+      "godot_offset": [
+        0.0,
+        0.0
+      ],
+      "godot_sprite_frames": "res://assets/generated/sprites/explosion.tres",
+      "kind": "sprite",
+      "palette": "neon",
+      "pivot": [
+        32,
+        32
+      ],
+      "sheet": "res://assets/generated/sprites/explosion.png",
+      "size": [
+        64,
+        64
+      ],
+      "status": "draft",
+      "style_version": 1,
+      "tags": [
+        "fx"
+      ],
+      "variants": {
+        "blue": {
+          "godot_sprite_frames": "res://assets/generated/sprites/explosion.blue.tres",
+          "sheet": "res://assets/generated/sprites/explosion.blue.png",
+          "swap": {
+            "#00a8d8": "#1f4fe0",
+            "#22e8ff": "#4a8aff",
+            "#b8f8ff": "#c8daff"
+          },
+          "swap_exact": true
+        },
+        "lime": {
+          "godot_sprite_frames": "res://assets/generated/sprites/explosion.lime.tres",
+          "sheet": "res://assets/generated/sprites/explosion.lime.png",
+          "swap": {
+            "#00a8d8": "#2ab800",
+            "#22e8ff": "#66ff22",
+            "#b8f8ff": "#d4ffc0"
+          },
+          "swap_exact": true
+        },
+        "magenta": {
+          "godot_sprite_frames": "res://assets/generated/sprites/explosion.magenta.tres",
+          "sheet": "res://assets/generated/sprites/explosion.magenta.png",
+          "swap": {
+            "#00a8d8": "#c400c8",
+            "#22e8ff": "#ff3aff",
+            "#b8f8ff": "#ffc8ff"
+          },
+          "swap_exact": true
+        },
+        "orange": {
+          "godot_sprite_frames": "res://assets/generated/sprites/explosion.orange.tres",
+          "sheet": "res://assets/generated/sprites/explosion.orange.png",
+          "swap": {
+            "#00a8d8": "#d86400",
+            "#22e8ff": "#ff9a1a",
+            "#b8f8ff": "#ffe0b0"
+          },
+          "swap_exact": true
+        },
+        "red": {
+          "godot_sprite_frames": "res://assets/generated/sprites/explosion.red.tres",
+          "sheet": "res://assets/generated/sprites/explosion.red.png",
+          "swap": {
+            "#00a8d8": "#d0103a",
+            "#22e8ff": "#ff3a5c",
+            "#b8f8ff": "#ffc0cc"
+          },
+          "swap_exact": true
+        },
+        "violet": {
+          "godot_sprite_frames": "res://assets/generated/sprites/explosion.violet.tres",
+          "sheet": "res://assets/generated/sprites/explosion.violet.png",
+          "swap": {
+            "#00a8d8": "#5a30e0",
+            "#22e8ff": "#9a70ff",
+            "#b8f8ff": "#ddd0ff"
+          },
+          "swap_exact": true
+        },
+        "yellow": {
+          "godot_sprite_frames": "res://assets/generated/sprites/explosion.yellow.tres",
+          "sheet": "res://assets/generated/sprites/explosion.yellow.png",
+          "swap": {
+            "#00a8d8": "#c8b400",
+            "#22e8ff": "#ffee22",
+            "#b8f8ff": "#fffac0"
+          },
+          "swap_exact": true
+        }
+      }
+    },
+    "laser": {
+      "animations": {
+        "bolt": {
+          "fps": 1.0,
+          "frames": [
+            "bolt"
+          ],
+          "loop": true
+        }
+      },
+      "description": "Laser streak travelling right: long thin line, white-hot front, pale core, fleet-colour glow. Drawn at 2x (64x4 on screen).",
+      "frames": {
+        "bolt": [
+          0,
+          0,
+          128,
+          8
+        ]
+      },
+      "godot_offset": [
+        0.0,
+        0.0
+      ],
+      "godot_sprite_frames": "res://assets/generated/sprites/laser.tres",
+      "kind": "sprite",
+      "palette": "neon",
+      "pivot": [
+        64,
+        4
+      ],
+      "sheet": "res://assets/generated/sprites/laser.png",
+      "size": [
+        128,
+        8
+      ],
+      "status": "draft",
+      "style_version": 1,
+      "tags": [
+        "fx"
+      ],
+      "variants": {
+        "blue": {
+          "godot_sprite_frames": "res://assets/generated/sprites/laser.blue.tres",
+          "sheet": "res://assets/generated/sprites/laser.blue.png",
+          "swap": {
+            "#00a8d8": "#1f4fe0",
+            "#22e8ff": "#4a8aff",
+            "#b8f8ff": "#c8daff"
+          },
+          "swap_exact": true
+        },
+        "lime": {
+          "godot_sprite_frames": "res://assets/generated/sprites/laser.lime.tres",
+          "sheet": "res://assets/generated/sprites/laser.lime.png",
+          "swap": {
+            "#00a8d8": "#2ab800",
+            "#22e8ff": "#66ff22",
+            "#b8f8ff": "#d4ffc0"
+          },
+          "swap_exact": true
+        },
+        "magenta": {
+          "godot_sprite_frames": "res://assets/generated/sprites/laser.magenta.tres",
+          "sheet": "res://assets/generated/sprites/laser.magenta.png",
+          "swap": {
+            "#00a8d8": "#c400c8",
+            "#22e8ff": "#ff3aff",
+            "#b8f8ff": "#ffc8ff"
+          },
+          "swap_exact": true
+        },
+        "orange": {
+          "godot_sprite_frames": "res://assets/generated/sprites/laser.orange.tres",
+          "sheet": "res://assets/generated/sprites/laser.orange.png",
+          "swap": {
+            "#00a8d8": "#d86400",
+            "#22e8ff": "#ff9a1a",
+            "#b8f8ff": "#ffe0b0"
+          },
+          "swap_exact": true
+        },
+        "red": {
+          "godot_sprite_frames": "res://assets/generated/sprites/laser.red.tres",
+          "sheet": "res://assets/generated/sprites/laser.red.png",
+          "swap": {
+            "#00a8d8": "#d0103a",
+            "#22e8ff": "#ff3a5c",
+            "#b8f8ff": "#ffc0cc"
+          },
+          "swap_exact": true
+        },
+        "violet": {
+          "godot_sprite_frames": "res://assets/generated/sprites/laser.violet.tres",
+          "sheet": "res://assets/generated/sprites/laser.violet.png",
+          "swap": {
+            "#00a8d8": "#5a30e0",
+            "#22e8ff": "#9a70ff",
+            "#b8f8ff": "#ddd0ff"
+          },
+          "swap_exact": true
+        },
+        "yellow": {
+          "godot_sprite_frames": "res://assets/generated/sprites/laser.yellow.tres",
+          "sheet": "res://assets/generated/sprites/laser.yellow.png",
+          "swap": {
+            "#00a8d8": "#c8b400",
+            "#22e8ff": "#ffee22",
+            "#b8f8ff": "#fffac0"
+          },
+          "swap_exact": true
+        }
+      }
+    },
+    "ship": {
+      "animations": {
+        "main": {
+          "fps": 1.0,
+          "frames": [
+            "main"
+          ],
+          "loop": true
+        }
+      },
+      "description": "Fighter, straight top-down, nose pointing right (+x). space1.io style: a flat solid triangle in the fleet colour with a pale 2px rim; the engine adds the neon glow. Drawn at 2x, shown at 0.5x.",
+      "frames": {
+        "main": [
+          0,
+          0,
+          64,
+          64
+        ]
+      },
+      "godot_offset": [
+        0.0,
+        0.0
+      ],
+      "godot_sprite_frames": "res://assets/generated/sprites/ship.tres",
+      "kind": "sprite",
+      "palette": "neon",
+      "pivot": [
+        32,
+        32
+      ],
+      "sheet": "res://assets/generated/sprites/ship.png",
+      "size": [
+        64,
+        64
+      ],
+      "status": "draft",
+      "style_version": 1,
+      "tags": [
+        "ship"
+      ],
+      "variants": {
+        "blue": {
+          "godot_sprite_frames": "res://assets/generated/sprites/ship.blue.tres",
+          "sheet": "res://assets/generated/sprites/ship.blue.png",
+          "swap": {
+            "#22e8ff": "#4a8aff",
+            "#b8f8ff": "#c8daff"
+          },
+          "swap_exact": true
+        },
+        "lime": {
+          "godot_sprite_frames": "res://assets/generated/sprites/ship.lime.tres",
+          "sheet": "res://assets/generated/sprites/ship.lime.png",
+          "swap": {
+            "#22e8ff": "#66ff22",
+            "#b8f8ff": "#d4ffc0"
+          },
+          "swap_exact": true
+        },
+        "magenta": {
+          "godot_sprite_frames": "res://assets/generated/sprites/ship.magenta.tres",
+          "sheet": "res://assets/generated/sprites/ship.magenta.png",
+          "swap": {
+            "#22e8ff": "#ff3aff",
+            "#b8f8ff": "#ffc8ff"
+          },
+          "swap_exact": true
+        },
+        "orange": {
+          "godot_sprite_frames": "res://assets/generated/sprites/ship.orange.tres",
+          "sheet": "res://assets/generated/sprites/ship.orange.png",
+          "swap": {
+            "#22e8ff": "#ff9a1a",
+            "#b8f8ff": "#ffe0b0"
+          },
+          "swap_exact": true
+        },
+        "red": {
+          "godot_sprite_frames": "res://assets/generated/sprites/ship.red.tres",
+          "sheet": "res://assets/generated/sprites/ship.red.png",
+          "swap": {
+            "#22e8ff": "#ff3a5c",
+            "#b8f8ff": "#ffc0cc"
+          },
+          "swap_exact": true
+        },
+        "violet": {
+          "godot_sprite_frames": "res://assets/generated/sprites/ship.violet.tres",
+          "sheet": "res://assets/generated/sprites/ship.violet.png",
+          "swap": {
+            "#22e8ff": "#9a70ff",
+            "#b8f8ff": "#ddd0ff"
+          },
+          "swap_exact": true
+        },
+        "yellow": {
+          "godot_sprite_frames": "res://assets/generated/sprites/ship.yellow.tres",
+          "sheet": "res://assets/generated/sprites/ship.yellow.png",
+          "swap": {
+            "#22e8ff": "#ffee22",
+            "#b8f8ff": "#fffac0"
+          },
+          "swap_exact": true
+        }
+      }
+    },
+    "stars_far": {
+      "columns": 1,
+      "description": "Far parallax star layer: sparse dim 1px stars, seamless 512px tile.",
+      "frames": {
+        "main": [
+          0,
+          0,
+          512,
+          512
+        ]
+      },
+      "godot_tileset": "res://assets/generated/tiles/stars_far.tres",
+      "kind": "tileset",
+      "palette": "neon",
+      "sheet": "res://assets/generated/tiles/stars_far.png",
+      "size": [
+        512,
+        512
+      ],
+      "status": "draft",
+      "style_version": 1,
+      "tags": [],
+      "tiles": {
+        "main": [
+          0,
+          0
+        ]
+      },
+      "variants": {}
+    },
+    "stars_near": {
+      "columns": 1,
+      "description": "Near parallax star layer: a few 2px stars, seamless 512px tile.",
+      "frames": {
+        "main": [
+          0,
+          0,
+          512,
+          512
+        ]
+      },
+      "godot_tileset": "res://assets/generated/tiles/stars_near.tres",
+      "kind": "tileset",
+      "palette": "neon",
+      "sheet": "res://assets/generated/tiles/stars_near.png",
+      "size": [
+        512,
+        512
+      ],
+      "status": "draft",
+      "style_version": 1,
+      "tags": [],
+      "tiles": {
+        "main": [
+          0,
+          0
+        ]
+      },
+      "variants": {}
+    }
+  },
+  "files": [
+    "sprites/explosion.blue.png",
+    "sprites/explosion.blue.tres",
+    "sprites/explosion.lime.png",
+    "sprites/explosion.lime.tres",
+    "sprites/explosion.magenta.png",
+    "sprites/explosion.magenta.tres",
+    "sprites/explosion.orange.png",
+    "sprites/explosion.orange.tres",
+    "sprites/explosion.png",
+    "sprites/explosion.red.png",
+    "sprites/explosion.red.tres",
+    "sprites/explosion.tres",
+    "sprites/explosion.violet.png",
+    "sprites/explosion.violet.tres",
+    "sprites/explosion.yellow.png",
+    "sprites/explosion.yellow.tres",
+    "sprites/laser.blue.png",
+    "sprites/laser.blue.tres",
+    "sprites/laser.lime.png",
+    "sprites/laser.lime.tres",
+    "sprites/laser.magenta.png",
+    "sprites/laser.magenta.tres",
+    "sprites/laser.orange.png",
+    "sprites/laser.orange.tres",
+    "sprites/laser.png",
+    "sprites/laser.red.png",
+    "sprites/laser.red.tres",
+    "sprites/laser.tres",
+    "sprites/laser.violet.png",
+    "sprites/laser.violet.tres",
+    "sprites/laser.yellow.png",
+    "sprites/laser.yellow.tres",
+    "sprites/ship.blue.png",
+    "sprites/ship.blue.tres",
+    "sprites/ship.lime.png",
+    "sprites/ship.lime.tres",
+    "sprites/ship.magenta.png",
+    "sprites/ship.magenta.tres",
+    "sprites/ship.orange.png",
+    "sprites/ship.orange.tres",
+    "sprites/ship.png",
+    "sprites/ship.red.png",
+    "sprites/ship.red.tres",
+    "sprites/ship.tres",
+    "sprites/ship.violet.png",
+    "sprites/ship.violet.tres",
+    "sprites/ship.yellow.png",
+    "sprites/ship.yellow.tres",
+    "tiles/stars_far.png",
+    "tiles/stars_far.tres",
+    "tiles/stars_near.png",
+    "tiles/stars_near.tres"
+  ],
+  "generator": "pagan 0.4.0",
+  "note": "Generated by `pagan build`. Do not edit: change the sources and rebuild."
+}

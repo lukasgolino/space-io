@@ -1,0 +1,53 @@
+name: neon
+description: "High-contrast arcade neon on near-black. One 4-step ramp per fleet colour (dark -> pale), plus ink and white."
+colors:
+  "0": { hex: "#04050c", name: void }
+  "1": { hex: "#0b1024", name: deep }
+  "2": { hex: "#18204a", name: navy }
+  "3": { hex: "#2e3a78", name: dusk }
+  "w": { hex: "#ffffff", name: white }
+  "g": { hex: "#9aa6c8", name: haze }
+  # fleet colours: dark, mid, bright, pale
+  "a": "#00506a"
+  "b": "#00a8d8"
+  "c": "#22e8ff"
+  "d": "#b8f8ff"
+  "e": "#6a0016"
+  "f": "#d0103a"
+  "h": "#ff3a5c"
+  "i": "#ffc0cc"
+  "j": "#6a2a00"
+  "k": "#d86400"
+  "l": "#ff9a1a"
+  "m": "#ffe0b0"
+  "n": "#5e5400"
+  "o": "#c8b400"
+  "p": "#ffee22"
+  "q": "#fffac0"
+  "r": "#0e5a00"
+  "s": "#2ab800"
+  "t": "#66ff22"
+  "u": "#d4ffc0"
+  "v": "#5e0060"
+  "x": "#c400c8"
+  "y": "#ff3aff"
+  "z": "#ffc8ff"
+  "A": "#2a1478"
+  "B": "#5a30e0"
+  "C": "#9a70ff"
+  "D": "#ddd0ff"
+  "E": "#0a1e6a"
+  "F": "#1f4fe0"
+  "G": "#4a8aff"
+  "H": "#c8daff"
+ramps:
+  ink: ["0", "1", "2", "3"]
+  light: ["g", "w"]
+  cyan: ["a", "b", "c", "d"]
+  red: ["e", "f", "h", "i"]
+  orange: ["j", "k", "l", "m"]
+  yellow: ["n", "o", "p", "q"]
+  lime: ["r", "s", "t", "u"]
+  magenta: ["v", "x", "y", "z"]
+  violet: ["A", "B", "C", "D"]
+  blue: ["E", "F", "G", "H"]

@@ -1,0 +1,1 @@
+pagan @ git+ssh://git@github.com/lukasgolino/PAGAN.git@v0.4.0

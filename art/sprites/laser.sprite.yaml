@@ -1,0 +1,17 @@
+name: laser
+description: 'Laser streak travelling right: long thin line, white-hot front, pale core, fleet-colour glow. Drawn at 2x (64x4 on screen).'
+pivot: [64, 4]
+outline: none
+tags: [fx]
+variants: {red: {ramp_swap: {cyan: red}}, orange: {ramp_swap: {cyan: orange}}, yellow: {ramp_swap: {cyan: yellow}}, lime: {ramp_swap: {cyan: lime}}, magenta: {ramp_swap: {cyan: magenta}}, violet: {ramp_swap: {cyan: violet}}, blue: {ramp_swap: {cyan: blue}}}
+size: [128, 8]
+frames:
+  bolt: |
+    ................................................................................................................................
+    ....bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb....
+    .cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.
+    .cddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwddc.
+    .cddddddddddddddddddddddddddddddddddddddwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwddc.
+    .cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc.
+    ....bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb....
+    ................................................................................................................................

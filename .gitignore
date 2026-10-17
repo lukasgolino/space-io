@@ -1,0 +1,8 @@
+# Godot per-machine cache
+.godot/
+*.tmp
+# Python
+.venv/
+__pycache__/
+# Exports
+build/
