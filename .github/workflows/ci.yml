@@ -3,6 +3,8 @@ name: ci
 on:
   push:
   pull_request:
+  # Actions → ci → "Run workflow" (pick a branch): also builds the Windows exe.
+  workflow_dispatch:
 
 env:
   GODOT_VERSION: 4.7.2
@@ -50,3 +52,58 @@ jobs:
         run: |
           git status --porcelain -- art assets
           test -z "$(git status --porcelain -- art assets)"
+
+  export-windows:
+    # build/SpaceIO.exe ("Windows" preset, PCK embedded), downloadable from the run's Artifacts. Manual runs only.
+    # Art is committed (assets/generated), so no PAGAN needed.
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Godot
+        id: godot-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}
+      - name: Install Godot
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot && cd ~/godot
+          curl -fsSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip && rm godot.zip
+          mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 godot
+      - name: Cache export templates
+        id: templates-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/godot/export_templates
+          key: godot-templates-win64-${{ env.GODOT_VERSION }}
+      - name: Install export templates (Windows x86_64 release only, checksum-verified)
+        if: steps.templates-cache.outputs.cache-hit != 'true'
+        run: |
+          base="https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable"
+          tpz="Godot_v${GODOT_VERSION}-stable_export_templates.tpz"
+          cd "$RUNNER_TEMP"
+          curl -fsSL -o "$tpz" "$base/$tpz"
+          curl -fsSL -o SHA512-SUMS.txt "$base/SHA512-SUMS.txt"
+          grep " $tpz\$" SHA512-SUMS.txt | sha512sum -c --quiet -
+          dest=~/.local/share/godot/export_templates/${GODOT_VERSION}.stable
+          mkdir -p "$dest"
+          unzip -q -j "$tpz" templates/version.txt templates/windows_release_x86_64.exe -d "$dest"
+          rm "$tpz"
+      - name: Export SpaceIO.exe
+        run: |
+          mkdir -p build
+          ~/godot/godot --headless --path . --import 2>&1 | tee import.log
+          ~/godot/godot --headless --path . --export-release "Windows" build/SpaceIO.exe 2>&1 | tee export.log
+          if grep -E '^(ERROR|SCRIPT ERROR)' import.log export.log; then echo "import/export reported errors"; exit 1; fi
+          test -s build/SpaceIO.exe
+          ls -l build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SpaceIO-${{ github.ref_name }}-${{ github.sha }}
+          path: build/SpaceIO.exe
+          retention-days: 7
+          if-no-files-found: error
