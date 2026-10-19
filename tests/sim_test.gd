@@ -26,8 +26,8 @@ func _physics_process(_dt: float) -> void:
 		if f.ships.size() > Tune.max_ships:
 			fails.append("fleet %s over cap: %d" % [f.name, f.ships.size()])
 		for s in f.ships:
-			if absf(s.global_position.x) > Tune.arena_half + 200 or absf(s.global_position.y) > Tune.arena_half + 200:
-				fails.append("ship outside arena at %s" % s.global_position)
+			if absf(s.pos.x) > Tune.arena_half + 200 or absf(s.pos.y) > Tune.arena_half + 200:
+				fails.append("ship outside arena at %s" % s.pos)
 	if frame < FRAMES and fails.is_empty():
 		return
 	total_kills = 0

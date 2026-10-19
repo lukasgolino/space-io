@@ -25,7 +25,11 @@ func _process(_dt: float) -> void:
 
 func _draw() -> void:
 	var vp := get_viewport_rect().size
+	_net_line(vp)
 	var p := world.player
+	if p == null:
+		_centred("connecting to host...", vp.y / 2, 28, TEXT)
+		return
 
 	# Fleet size + kills, top-left
 	draw_string(_font, Vector2(28, 58), "%d" % p.ships.size(), HORIZONTAL_ALIGNMENT_LEFT, -1, 46, Art.color(p.team))
@@ -70,7 +74,12 @@ func _draw() -> void:
 			continue
 		var at := mo + (f.anchor + Vector2.ONE * Tune.arena_half) * k
 		var r := 2.0 + sqrt(f.ships.size()) * 1.3
-		draw_circle(at, r + (2.0 if f.is_player else 0.0), Color.WHITE if f.is_player else Art.color(f.team))
+		if f == p:
+			draw_circle(at, r + 2.0, Color.WHITE)
+		else:
+			draw_circle(at, r, Art.color(f.team))
+			if f.is_human():
+				draw_circle(at, r + 2.5, Color.WHITE, false, 1.5)
 
 	# Death screen
 	if not p.alive:
@@ -89,8 +98,23 @@ func _bar(at: Vector2, w: float, fill: float, label: String, col: Color) -> void
 	draw_string(_font, at + Vector2(0, -8), label, HORIZONTAL_ALIGNMENT_LEFT, -1, 15, DIM)
 
 
+## Host: who's connected and where to join; client: ping.
+func _net_line(vp: Vector2) -> void:
+	if world.net == null:
+		return
+	var text := ""
+	if world.mode == World.Mode.HOST:
+		var ips := world.net.lan()
+		text = "HOSTING  ·  %d joined  ·  port %d  ·  LAN %s" % [world.net.client_count(), world.net.port,
+			", ".join(ips) if not ips.is_empty() else "?"]
+	else:
+		var ms := world.net.ping_ms()
+		text = "ONLINE  ·  ping %s" % ("%d ms" % ms if ms >= 0 else "-")
+	draw_string(_font, Vector2(28, vp.y - 20), text, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, DIM)
+
+
 func _board_row(x: float, y: float, rank: int, f: Fleet) -> void:
-	var col := Color.WHITE if f.is_player else Art.color(f.team)
+	var col := Color.WHITE if f == world.player else Art.color(f.team)
 	draw_string(_font, Vector2(x, y), "%d." % rank, HORIZONTAL_ALIGNMENT_LEFT, -1, 18, DIM)
 	draw_string(_font, Vector2(x + 34, y), f.name, HORIZONTAL_ALIGNMENT_LEFT, 150, 18, col)
 	draw_string(_font, Vector2(x + 190, y), str(f.ships.size()), HORIZONTAL_ALIGNMENT_RIGHT, 40, 18, col)

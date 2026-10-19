@@ -9,6 +9,9 @@ var vel := PackedVector2Array()
 var life := PackedFloat32Array()
 var fleet_id := PackedInt32Array()
 var team := PackedInt32Array()
+var uid := PackedInt32Array()
+
+var _next_uid := 1
 
 var _mm: Array[MultiMesh] = []
 var _counts := PackedInt32Array()
@@ -44,14 +47,26 @@ func refresh_look() -> void:
 		m.modulate = Color(Tune.laser_hdr, Tune.laser_hdr, Tune.laser_hdr)   # HDR above 1 blooms
 
 
-func spawn(at: Vector2, v: Vector2, f: Fleet) -> void:
+## Returns the bolt's uid, or -1 if the pool is full.
+func spawn(at: Vector2, v: Vector2, fid: int, t: int, lifetime: float, id := -1) -> int:
 	if pos.size() >= MAX:
-		return
+		return -1
+	if id < 0:
+		id = _next_uid
+		_next_uid += 1
 	pos.append(at)
 	vel.append(v)
-	life.append(Tune.laser_life)
-	fleet_id.append(f.id)
-	team.append(f.team)
+	life.append(lifetime)
+	fleet_id.append(fid)
+	team.append(t)
+	uid.append(id)
+	return id
+
+
+func remove_uid(id: int) -> void:
+	var i := uid.find(id)
+	if i >= 0:
+		remove(i)
 
 
 func remove(i: int) -> void:
@@ -61,11 +76,13 @@ func remove(i: int) -> void:
 	life[i] = life[last]
 	fleet_id[i] = fleet_id[last]
 	team[i] = team[last]
+	uid[i] = uid[last]
 	pos.resize(last)
 	vel.resize(last)
 	life.resize(last)
 	fleet_id.resize(last)
 	team.resize(last)
+	uid.resize(last)
 
 
 func step(dt: float) -> void:

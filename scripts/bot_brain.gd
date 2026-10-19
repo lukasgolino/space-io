@@ -48,7 +48,7 @@ func _think() -> void:
 		if m > n * 1.5 + 2 and d < 700.0:
 			if threat == null or d < me.distance_to(threat.centre()):
 				threat = other
-		elif d - (200.0 if other.is_player else 0.0) < best:
+		elif d - (200.0 if other.is_human() else 0.0) < best:
 			best = d
 			target = other
 

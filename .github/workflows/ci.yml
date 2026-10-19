@@ -1,0 +1,52 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+env:
+  GODOT_VERSION: 4.7.2
+
+jobs:
+  game:
+    # unit, smoke, 60 s sim, host+client network, perf bench (tools/test.sh)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cache Godot
+        id: godot-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}
+      - name: Install Godot
+        if: steps.godot-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot && cd ~/godot
+          curl -fsSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip && rm godot.zip
+          mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 godot
+      - name: Tests
+        # CI runners are slower than a desktop: perf only fails on a big regression.
+        run: GODOT=~/godot/godot PERF_MAX_MS=25 tools/test.sh
+
+  art:
+    # The committed assets/generated must be exactly what the art sources build (PAGAN pinned).
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install PAGAN (pinned, over https)
+        run: pip install "$(sed 's#git+ssh://git@github.com/#git+https://github.com/#' requirements.txt)"
+      - name: Rebuild art
+        run: |
+          cd art && python tools/gen_art.py && pagan lint && pagan build && cd ..
+          python tools/post_build.py
+      - name: No drift
+        run: |
+          git status --porcelain -- art assets
+          test -z "$(git status --porcelain -- art assets)"

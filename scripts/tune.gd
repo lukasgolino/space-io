@@ -16,6 +16,7 @@ var arena_half := 2600.0
 var max_speed := 320.0
 var size_slowdown := 0.35
 var accel := 2200.0
+var accel_slowdown := 0.0
 var slow_radius := 140.0
 var boost_mult := 2.2
 var boost_time := 0.45
@@ -77,6 +78,7 @@ const DOCS := [
 	["movement", "max_speed", "top speed of a 1-ship fleet, px/s (keep a bit above laser_speed so small fleets can outrun bullets)"],
 	["movement", "size_slowdown", "fraction of top speed lost at the fleet cap (0.35 = a full fleet moves at 65%), linear in fleet size"],
 	["movement", "accel", "how fast the fleet leader reaches top speed, px/s^2 (higher = snappier)"],
+	["movement", "accel_slowdown", "fraction of accel lost at the fleet cap (0.3 = a full fleet accelerates at 70%), linear in fleet size"],
 	["movement", "slow_radius", "leader eases to a stop when the cursor is this close, px"],
 	["movement", "boost_mult", "speed multiplier while boosting"],
 	["movement", "boost_time", "boost duration, s"],
@@ -121,12 +123,47 @@ const DOCS := [
 
 var status := ""            # shown briefly by the HUD
 var status_time := 0.0
+## Network client: the host owns every value; local F5 / saving is off.
+var locked := false
+
+var _defaults := {}
 
 
 ## Headless tests skip the file so they always run on the defaults.
 func _ready() -> void:
+	_defaults = values()
 	if not DisplayServer.get_name() == "headless":
 		load_file()
+
+
+## Every tunable value by name (what the host sends to clients).
+func values() -> Dictionary:
+	var out := {}
+	for entry: Array in DOCS:
+		var v: Variant = get(entry[1])
+		out[entry[1]] = v.duplicate() if v is Array else v
+	return out
+
+
+## Applies known keys (unknown ones are ignored, types coerced) and emits `changed`.
+func apply_values(d: Dictionary) -> void:
+	for entry: Array in DOCS:
+		var key: String = entry[1]
+		if d.has(key):
+			_set_value(key, d[key])
+	changed.emit()
+
+
+func default_value(key: String) -> Variant:
+	return _defaults.get(key)
+
+
+func _set_value(key: String, value: Variant) -> void:
+	var current: Variant = get(key)
+	if current is Array:
+		(current as Array).assign(value)
+	else:
+		set(key, type_convert(value, typeof(current)))
 
 
 func file_path() -> String:
@@ -135,10 +172,14 @@ func file_path() -> String:
 	return ProjectSettings.globalize_path("res://").path_join(FILE_NAME)
 
 
-func load_file() -> void:
-	var path := file_path()
+func load_file(path := "") -> void:
+	if locked:
+		_say("the host controls the settings")
+		return
+	if path == "":
+		path = file_path()
 	if not FileAccess.file_exists(path):
-		_write_defaults(path)
+		_write(path)
 		_say("wrote default settings to %s" % path)
 		return
 	var cfg := ConfigFile.new()
@@ -149,23 +190,33 @@ func load_file() -> void:
 		return
 	if cfg.get_value("meta", "defaults_version", 1) != DEFAULTS_VERSION:
 		DirAccess.rename_absolute(path, path + ".old")
-		_write_defaults(path)
+		_write(path)
 		_say("defaults changed: old settings moved to %s.old, wrote new %s" % [path, path])
 		return
 	var n := 0
+	var missing := false
 	for entry: Array in DOCS:
 		var key: String = entry[1]
 		if not cfg.has_section_key(entry[0], key):
+			missing = true
 			continue
-		var value: Variant = cfg.get_value(entry[0], key)
-		var current: Variant = get(key)
-		if current is Array:
-			(current as Array).assign(value)
-		else:
-			set(key, type_convert(value, typeof(current)))
+		_set_value(key, cfg.get_value(entry[0], key))
 		n += 1
+	if missing:   # a newer build added settings: rewrite the file with them (keeps the loaded values)
+		_write(path)
 	_say("loaded %d settings from %s" % [n, path])
 	changed.emit()
+
+
+## Writes the current values (e.g. from the F12 panel) to tuning.cfg.
+func save_file(path := "") -> bool:
+	if locked:
+		return false
+	if path == "":
+		path = file_path()
+	var ok := _write(path)
+	_say(("saved settings to %s" if ok else "could not write %s") % path)
+	return ok
 
 
 func _say(msg: String) -> void:
@@ -173,7 +224,8 @@ func _say(msg: String) -> void:
 	status_time = Time.get_ticks_msec() / 1000.0
 
 
-func _write_defaults(path: String) -> void:
+## Writes the current values (defaults, unless loaded or changed) with their explanations.
+func _write(path: String) -> bool:
 	var lines: PackedStringArray = [
 		"; Space IO tuning. Edit, save, press F5 in game to apply (arena/bot sizes apply on new spawns).",
 		"; Delete this file to get the defaults back.",
@@ -191,8 +243,10 @@ func _write_defaults(path: String) -> void:
 		lines.append("; " + entry[2])
 		lines.append("%s=%s" % [entry[1], var_to_str(get(entry[1]))])
 	var f := FileAccess.open(path, FileAccess.WRITE)
-	if f:
-		f.store_string("\n".join(lines) + "\n")
+	if f == null:
+		return false
+	f.store_string("\n".join(lines) + "\n")
+	return true
 
 
 func _unhandled_input(event: InputEvent) -> void:
