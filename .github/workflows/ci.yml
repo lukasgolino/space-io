@@ -12,13 +12,13 @@ env:
 jobs:
   game:
     # unit, smoke, 60 s sim, host+client network, perf bench (tools/test.sh)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Cache Godot
         id: godot-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/godot
           key: godot-${{ env.GODOT_VERSION }}
@@ -35,11 +35,11 @@ jobs:
 
   art:
     # The committed assets/generated must be exactly what the art sources build (PAGAN pinned).
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Install PAGAN (pinned, over https)
@@ -57,13 +57,13 @@ jobs:
     # build/SpaceIO.exe ("Windows" preset, PCK embedded), downloadable from the run's Artifacts. Manual runs only.
     # Art is committed (assets/generated), so no PAGAN needed.
     if: github.event_name == 'workflow_dispatch'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Cache Godot
         id: godot-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/godot
           key: godot-${{ env.GODOT_VERSION }}
@@ -76,7 +76,7 @@ jobs:
           mv Godot_v${GODOT_VERSION}-stable_linux.x86_64 godot
       - name: Cache export templates
         id: templates-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.local/share/godot/export_templates
           key: godot-templates-win64-${{ env.GODOT_VERSION }}
@@ -102,7 +102,7 @@ jobs:
           test -s build/SpaceIO.exe
           ls -l build
           echo "ARTIFACT=SpaceIO-${GITHUB_REF_NAME//\//-}-${GITHUB_SHA::7}" >> "$GITHUB_ENV"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: ${{ env.ARTIFACT }}
           path: build/SpaceIO.exe
