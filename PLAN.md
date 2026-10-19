@@ -29,7 +29,8 @@ Replica of space1.io in Godot 4.7.2. Art generated with PAGAN v0.4.0 (pinned), h
 - `Art` autoload reads `assets/generated/manifest.json` (the PAGAN contract).
 - Verify: `tools/test.sh` (unit, smoke, 60 s sim, host+client over localhost, perf bench; timeouts and
   any ERROR line fail it), `tools/check.sh` = art build + test.sh. CI (`.github/workflows/ci.yml`) runs
-  test.sh and checks committed art equals a fresh PAGAN build.
+  test.sh and checks committed art equals a fresh PAGAN build; a manual run (Actions → ci → Run workflow)
+  also exports `SpaceIO.exe` as a run artifact. Local exe: `tools/export_windows.sh` → `build/SpaceIO.exe`.
   Demo: `godot --path . -- --autopilot`; two-machine test: `-- --host` / `-- --join=IP`.
 
 ## Art pipeline (PAGAN)
